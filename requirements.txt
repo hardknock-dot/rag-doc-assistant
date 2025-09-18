@@ -1,0 +1,9 @@
+langchain
+faiss-cpu
+chromadb
+openai
+tiktoken
+pypdf
+python-dotenv
+fastapi
+uvicorn
