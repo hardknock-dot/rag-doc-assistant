@@ -1,0 +1,5 @@
+python app/ingest.py
+python app/embeddings.py
+python app/retriever.py
+python app/qa.py
+streamlit run app/ui.py

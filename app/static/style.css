@@ -1,0 +1,61 @@
+/* Set the overall background to black */
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container to center the card */
+.container {
+    text-align: center;
+    width: 100%;
+}
+
+/* Card for the question input */
+.card {
+    background-color: #1c1c1c;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+    max-width: 500px;
+    margin: auto;
+}
+
+/* Input field style */
+input#question {
+    width: 80%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Button style */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: #ff6b6b;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff4b4b;
+}
+
+/* Answer styling */
+#answer {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #00ffcc;
+    word-wrap: break-word;
+}

@@ -1,4 +1,7 @@
 langchain
+langchain-community
+langchain-chroma
+langchain-huggingface
 faiss-cpu
 chromadb
 openai
