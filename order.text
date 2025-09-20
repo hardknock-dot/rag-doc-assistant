@@ -1,5 +1,8 @@
-python app/ingest.py
-python app/embeddings.py
-python app/retriever.py
-python app/qa.py
-streamlit run app/ui.py
+# Step 1: Ingest documents and create vector DB
+python -m app.ingest
+
+# Step 2: Run QA to ask questions
+python -m app.qa
+
+# Optional: Run UI for CLI interaction
+python -m app.ui
