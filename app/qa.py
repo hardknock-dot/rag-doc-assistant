@@ -1,34 +1,20 @@
 # app/qa.py
-from langchain_community.vectorstores import Chroma
-from langchain_huggingface import HuggingFacePipeline
 from langchain.chains import RetrievalQA
-from app.embeddings import get_embeddings
-  # make sure this file returns HuggingFaceEmbeddings
+# choose your preferred HuggingFace wrapper import present in your env
+from langchain_huggingface import HuggingFacePipeline  # ensure package is installed
+from transformers import pipeline
 
-# Load embeddings
-embeddings = get_embeddings()
-
-# Load vector database and provide embeddings
-persist_directory = "db"
-vectordb = Chroma(persist_directory=persist_directory, embedding_function=embeddings)
-
-# Create retriever
-retriever = vectordb.as_retriever()
-
-# Load HuggingFace LLM
-llm_pipeline = HuggingFacePipeline.from_model_id(
-    model_id="google/flan-t5-base",
-    task="text2text-generation",
-    model_kwargs={"max_length": 256}  # remove 'temperature' to avoid warning
-)
-
-# Create QA chain
-qa = RetrievalQA.from_chain_type(
-    llm=llm_pipeline,
-    retriever=retriever
-)
-
-if __name__ == "__main__":
-    query = input("Enter your question: ")
-    result = qa.invoke(query)
-    print("Answer:", result["result"])
+def build_qa(retriever):
+    """
+    Build and return a RetrievalQA chain using a local HF model.
+    We avoid creating the retriever here so the caller (retriever.py) can pass it.
+    """
+    # local LLM via transformers
+    generator = pipeline("text2text-generation", model="google/flan-t5-base", device=-1)
+    llm = HuggingFacePipeline.from_model_id(
+        model_id="google/flan-t5-base",
+        task="text2text-generation",
+        model_kwargs={"max_length": 256}
+    )
+    qa = RetrievalQA.from_chain_type(llm=llm, retriever=retriever, return_source_documents=True)
+    return qa

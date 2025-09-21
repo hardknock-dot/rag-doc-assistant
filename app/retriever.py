@@ -1,24 +1,37 @@
+# app/retriever.py
+# Minimal adapter to return answer + sources.
+from pathlib import Path
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain.chains import RetrievalQA
 
-# Step 1: Load embeddings
-embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+# import the embedding factory and llm-qa build if you have them
+# Adjust these imports to match your project module names (relative imports)
+from .embeddings import get_embeddings  # must return HuggingFaceEmbeddings or equivalent
+from .qa import build_qa  # we'll assume qa.py exposes build_qa()
 
-# Step 2: Load existing Chroma DB
-vectordb = Chroma(
-    persist_directory="db",
-    embedding_function=embeddings
-)
+_DB_DIR = "db"
 
-# Step 3: Create a retriever
-retriever = vectordb.as_retriever(search_kwargs={"k": 3})
+def load_vectordb():
+    embeddings = get_embeddings()
+    vectordb = Chroma(persist_directory=_DB_DIR, embedding_function=embeddings)
+    return vectordb
 
-# Step 4: Test a query
-query = "What is a cat?"
-print(f"Query: {query}")
-results = retriever.get_relevant_documents(query)
+# build_qa should accept a retriever and return a RetrievalQA chain
+def answer(query: str, k: int = 3):
+    """
+    Returns dict: { "answer": str, "source_documents": [ {source, snippet}, ... ] }
+    """
+    vectordb = load_vectordb()
+    retriever = vectordb.as_retriever(search_kwargs={"k": k})
 
-print("\nTop results:")
-for i, doc in enumerate(results, start=1):
-    print(f"\nResult {i}:")
-    print(doc.page_content[:300])  # print first 300 chars
+    qa = build_qa(retriever)  # delegates LLM selection to qa.py
+    # use invoke to be compatible with newer langchain versions
+    result = qa.invoke({"query": query})
+    answer_text = result.get("result") or result.get("answer") or ""
+    sources = []
+    for d in result.get("source_documents", []):
+        sources.append({
+            "source": d.metadata.get("source", "unknown"),
+            "snippet": (d.page_content[:300] + "...") if len(d.page_content) > 300 else d.page_content
+        })
+    return {"answer": answer_text, "sources": sources}

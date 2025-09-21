@@ -1,61 +1,96 @@
-/* Set the overall background to black */
+/* app/static/style.css */
 body {
     background-color: #000;
     color: #fff;
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: Arial, sans-serif;
     height: 100vh;
     margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Container to center the card */
 .container {
-    text-align: center;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
 }
 
-/* Card for the question input */
 .card {
-    background-color: #1c1c1c;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
-    max-width: 500px;
-    margin: auto;
+    background: linear-gradient(180deg,#141414,#1a1a1a);
+    padding: 28px;
+    border-radius: 16px;
+    width: 520px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    text-align: center;
 }
 
-/* Input field style */
 input#question {
-    width: 80%;
+    width: 92%;
     padding: 12px;
     border-radius: 8px;
     border: none;
-    margin-bottom: 15px;
-    font-size: 16px;
+    background: #0f0f0f;
+    color: #fff;
+    font-size: 15px;
 }
 
-/* Button style */
 button {
-    padding: 10px 20px;
-    font-size: 16px;
+    margin-top: 8px;
+    padding: 10px 58px;
     border-radius: 8px;
     border: none;
-    background-color: #ff6b6b;
-    color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    background-color: #ff6b6b;
+    color: #ffffff;
 }
 
 button:hover {
-    background-color: #ff4b4b;
+    background-color: #ffffff;
+    color: #ff6b6b;
 }
 
-/* Answer styling */
-#answer {
+.answer {
+    margin-top: 18px;
+    color: #00ffd5;
+    font-size: 16px;
+    text-align: left;
+    white-space: pre-wrap;
+}
+
+.sources {
+    margin-top: 14px;
+    text-align: left;
+}
+
+.source {
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+}
+.chat-history {
     margin-top: 20px;
-    font-size: 18px;
-    color: #00ffcc;
-    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.question {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px;
+    border-radius: 6px;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.answer {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 6px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.answer pre {
+    margin: 0;
+    font-family: inherit;
 }
