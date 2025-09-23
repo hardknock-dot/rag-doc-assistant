@@ -13,88 +13,93 @@
     <div class="container">
       <div class="card">
         <h1>RAG Doc Assistant</h1>
+        
         <input id="question" type="text" placeholder="Ask a question..." />
-        <!-- Inside your .card div -->
-        <div id="answer" class="answer"></div>
-
-        <div id="chatHistory" class="chat-history"></div>
-
         <div style="margin-top: 12px">
           <button id="askBtn">Ask</button>
         </div>
-        
-        <input type="file" id="pdfUpload" />
-        <button id="uploadBtn">Upload PDF</button>
-        <!-- <div id="sources" class="sources"></div> -->
+        <div id="answer" class="answer"></div>
+        <div id="chatHistory" class="chat-history"></div>
+        <div id="sources" class="sources"></div>
+      </div>
+      <div class="uploadcard">
+        <h2>Upload PDF</h2>
+        <input type="file" id="pdfUpload" accept=".pdf" />
+        <button id="uploadBtn">Upload</button>
+        <div style="margin-top: 12px; font-size: 0.9em; color: #555">
+          Upload a PDF document to add it to the knowledge base.
+        </div>
       </div>
     </div>
 
     <script>
-            async function askQuestion() {
-              const q = document.getElementById("question").value;
-              if (!q) return;
-              document.getElementById("answer").innerText = "Thinking...";
-              const res = await fetch("/ask", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: q }),
-              });
-              const data = await res.json();
-              if (data.error) {
-                document.getElementById("answer").innerText = "Error: " + data.error;
-                return;
-              }
-              document.getElementById("answer").innerText =
-                data.answer || "No answer";
-              const srcElem = document.getElementById("sources");
-              srcElem.innerHTML = "";
-              (data.sources || []).forEach((s) => {
-                const div = document.createElement("div");
-                div.className = "source";
-                div.innerHTML = `<strong>${s.source}</strong><div>${s.snippet}</div>`;
-                srcElem.appendChild(div);
-              });
-            }
+  async function askQuestion() {
+    const q = document.getElementById("question").value;
+    if (!q) return;
 
-            document.getElementById("askBtn").addEventListener("click", askQuestion);
-            document
-              .getElementById("question")
-              .addEventListener("keydown", function (e) {
-                if (e.key === "Enter") askQuestion();
-              });
+    const chatDiv = document.getElementById("chatHistory");
 
-              document.getElementById("uploadBtn").addEventListener("click", async () => {
+    // Add user question bubble
+    const qDiv = document.createElement("div");
+    qDiv.className = "bubble user";
+    qDiv.innerText = q;
+    chatDiv.appendChild(qDiv);
+
+    document.getElementById("question").value = "";
+
+    // Add temporary "thinking" bubble
+    const aDiv = document.createElement("div");
+    aDiv.className = "bubble bot";
+    aDiv.innerText = "Thinking...";
+    chatDiv.appendChild(aDiv);
+
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: q }),
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      aDiv.innerText = "❌ Error: " + data.error;
+      return;
+    }
+
+    // Update bot bubble with actual answer
+    aDiv.innerText = data.answer || "No answer";
+
+    // Add sources if available
+    if (data.sources && data.sources.length > 0) {
+      const srcDiv = document.createElement("div");
+      srcDiv.className = "sources";
+      srcDiv.innerHTML = "<strong>Sources:</strong><br>";
+      data.sources.forEach(s => {
+        const one = document.createElement("div");
+        one.className = "source";
+        one.innerText = `${s.source}: ${s.snippet}`;
+        srcDiv.appendChild(one);
+      });
+      chatDiv.appendChild(srcDiv);
+    }
+
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+  }
+document.getElementById("uploadBtn").addEventListener("click", async () => {
         const fileInput = document.getElementById("pdfUpload");
         if (fileInput.files.length === 0) return;
         const formData = new FormData();
         formData.append("file", fileInput.files[0]);
 
-        const res = await fetch("/upload", {
-          method: "POST",
-          body: formData
-        });
+        const res = await fetch("/upload", { method: "POST", body: formData });
         const data = await res.json();
         alert(data.success || data.error);
       });
+  document.getElementById("askBtn").addEventListener("click", askQuestion);
+  document.getElementById("question").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") askQuestion();
+  });
+</script>
 
-    //   function updateChatHistory() {
-    //     const chatDiv = document.getElementById("chatHistory");
-    //     chatDiv.innerHTML = "";
-    //     const history = {{ chat_history | tojson }};
-    //     history.forEach(item => {
-    //       const q = document.createElement("div");
-    //       q.className = "question";
-    //       q.innerText = "Q: " + item.question;
-    //       const a = document.createElement("div");
-    //       a.className = "answer";
-    //       a.innerText = "A: " + item.answer;
-    //       chatDiv.appendChild(q);
-    //       chatDiv.appendChild(a);
-    //     });
-    //   }
-
-      // call updateChatHistory() on page load
-      updateChatHistory();
-    </script>
   </body>
 </html>

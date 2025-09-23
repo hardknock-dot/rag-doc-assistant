@@ -11,10 +11,12 @@ body {
 }
 
 .container {
-    width: 100%;
+    width: auto;
     display: flex;
-    justify-content: center;
-    padding: 20px;
+    flex-direction: column; /* stack vertically */
+    align-items: flex-end; /* keep cards aligned to the corner */
+    gap: 10px;
+    padding: 6px;
 }
 
 .card {
@@ -24,6 +26,19 @@ body {
     width: 520px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.7);
     text-align: center;
+    display: flex; /* Added */
+    flex-direction: column; /* Added */
+    align-items: center; /* Added */
+}
+.uploadcard {
+    background: linear-gradient(180deg,#141414,#1a1a1a);
+    padding: 28px;
+    border-radius: 12px;
+    width: 520px; /* match original card width for desktop */
+    height: 150px; /* constrained in the corner widget */
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    text-align: left;
+    margin-top: 0;
 }
 
 input#question {
@@ -72,7 +87,7 @@ button:hover {
 }
 .chat-history {
     margin-top: 20px;
-    max-height: 300px;
+    max-height: 200px;
     overflow-y: auto;
 }
 
@@ -93,4 +108,103 @@ button:hover {
 .answer pre {
     margin: 0;
     font-family: inherit;
+}
+.chat-history {
+    margin-top: 20px;
+    height: 200px;
+    width: 470px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin: 8px 0;
+    max-width: 75%;
+    white-space: pre-wrap;
+}
+
+.user {
+    background: #ff6b6b;
+    color: #fff;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.bot {
+    background: #1a1a1a;
+    color: #00ffd5;
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+.sources {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+/* --- New styles for upload section --- */
+.upload-container {
+    width: 100%;
+    margin-top: 12px;
+    display: flex; /* Added */
+    justify-content: flex-end; /* Added */
+    align-items: center; /* Added */
+    margin-bottom: 20px;
+}
+
+#pdfUpload {
+    margin-right: 90px;
+    justify-content: right;
+}
+
+@media (max-width: 420px) {
+    .uploadcard, .card { width: calc(100% - 32px); }
+}
+/* --- New styles for dropdown --- */
+.sources-dropdown {
+    width: 100%;
+    margin-top: 15px;
+    text-align: left;
+    display: none; /* Initially hidden */
+}
+
+.dropdown-header {
+    background-color: #2a2a2a;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-header:hover {
+    background-color: #3a3a3a;
+}
+
+.sources-content {
+    margin-top: 8px;
+    padding: 0 10px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+}
+
+.source-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.source-item:last-child {
+    border-bottom: none;
 }

@@ -25,19 +25,28 @@ def home():
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    data = request.json or request.form
-    query = data.get("query") if data else None
+    data = request.get_json()
+    query = data.get("query")
+
     if not query:
         return jsonify({"error": "No query provided"}), 400
+
     try:
-        resp = get_answer(query, k=3)
-        # append to session memory
-        session["history"].append({"question": query, "answer": resp["answer"]})
-        session.modified = True
-        return jsonify(resp)
+        resp = qa_chain(query)
+        return jsonify({
+            "question": query,
+            "answer": resp.get("answer", ""),
+            "sources": resp.get("sources", [])
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+def qa_chain(query):
+    resp = get_answer(query, k=3)
+    # maintain chat history in session
+    history = session.get("history", [])
+    history.append({"question": query, "answer": resp.get("answer", "")})
+    session["history"] = history[-10:]  # keep last 10 interactions
+    return resp
 @app.route("/upload", methods=["POST"])
 def upload_file():
     if "file" not in request.files:
