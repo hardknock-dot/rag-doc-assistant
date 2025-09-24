@@ -19,27 +19,35 @@ def allowed_file(filename):
 
 @app.route("/")
 def home():
-    if "history" not in session:
-        session["history"] = []
-    return render_template("index.html", chat_history=session["history"])
+    history = session.get("history", [])
+    return render_template("index.html", chat_history=history)
+
+
+# app/ui_server.py
 
 @app.route("/ask", methods=["POST"])
 def ask():
-    data = request.get_json()
+    data = request.get_json() or request.form
     query = data.get("query")
-
     if not query:
         return jsonify({"error": "No query provided"}), 400
 
     try:
-        resp = qa_chain(query)
+        resp = get_answer(query, k=3)  # your retriever.answer method
+
+        # resp now has {"answer": text, "sources": [ {source, snippet}, ... ] }
+
+        # Optionally, include the question back and chat history
         return jsonify({
             "question": query,
-            "answer": resp.get("answer", ""),
-            "sources": resp.get("sources", [])
+            "answer": resp["answer"],
+            "sources": resp["sources"],
+            "history": session.get("history", [])
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 def qa_chain(query):
     resp = get_answer(query, k=3)
     # maintain chat history in session

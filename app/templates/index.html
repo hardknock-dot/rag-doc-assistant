@@ -1,105 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <title>RAG QA</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <div class="card">
-        <h1>RAG Doc Assistant</h1>
-        
-        <input id="question" type="text" placeholder="Ask a question..." />
-        <div style="margin-top: 12px">
-          <button id="askBtn">Ask</button>
+        <div class="card">
+            <h1>RAG Doc Assistant</h1>
+
+            <input id="question" type="text" placeholder="Ask a question..." />
+            <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px; justify-content: center;">
+                <label class="mode-toggle">
+                    <input type="checkbox" id="ragMode" checked>
+                    <span class="slider"></span>
+                    <span class="mode-label">RAG Mode</span>
+                </label>
+                <button id="askBtn">Ask</button>
+            </div>
+            <div id="answer" class="answer"></div>
+            <div id="chatHistory" class="chat-history"></div>
+            <div id="sources" class="sources"></div>
         </div>
-        <div id="answer" class="answer"></div>
-        <div id="chatHistory" class="chat-history"></div>
-        <div id="sources" class="sources"></div>
-      </div>
-      <div class="uploadcard">
-        <h2>Upload PDF</h2>
-        <input type="file" id="pdfUpload" accept=".pdf" />
-        <button id="uploadBtn">Upload</button>
-        <div style="margin-top: 12px; font-size: 0.9em; color: #555">
-          Upload a PDF document to add it to the knowledge base.
+        <div class="uploadcard">
+            <h2>Upload PDF</h2>
+            <input type="file" id="pdfUpload" accept=".pdf" />
+            <button id="uploadBtn">Upload</button>
+            <div style="margin-top: 12px; font-size: 0.9em; color: #555">
+                Upload a PDF document to add it to the knowledge base.
+            </div>
         </div>
-      </div>
     </div>
 
     <script>
-  async function askQuestion() {
-    const q = document.getElementById("question").value;
-    if (!q) return;
+        async function askQuestion() {
+            const q = document.getElementById("question").value;
+            if (!q) return;
 
-    const chatDiv = document.getElementById("chatHistory");
+            const useRag = document.getElementById("ragMode").checked;
+            const chatDiv = document.getElementById("chatHistory");
 
-    // Add user question bubble
-    const qDiv = document.createElement("div");
-    qDiv.className = "bubble user";
-    qDiv.innerText = q;
-    chatDiv.appendChild(qDiv);
+            // Add user question bubble with mode indicator
+            const qDiv = document.createElement("div");
+            qDiv.className = "bubble user";
+            const modeText = useRag ? " (RAG)" : " (LLM)";
+            qDiv.innerText = q + modeText;
+            chatDiv.appendChild(qDiv);
 
-    document.getElementById("question").value = "";
+            document.getElementById("question").value = "";
 
-    // Add temporary "thinking" bubble
-    const aDiv = document.createElement("div");
-    aDiv.className = "bubble bot";
-    aDiv.innerText = "Thinking...";
-    chatDiv.appendChild(aDiv);
+            // Add temporary "thinking" bubble
+            const aDiv = document.createElement("div");
+            aDiv.className = "bubble bot";
+            aDiv.innerText = "Thinking...";
+            chatDiv.appendChild(aDiv);
 
-    const res = await fetch("/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: q }),
-    });
+            const res = await fetch("/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    query: q,
+                    use_rag: useRag
+                }),
+            });
 
-    const data = await res.json();
+            const data = await res.json();
 
-    if (data.error) {
-      aDiv.innerText = "❌ Error: " + data.error;
-      return;
-    }
+            if (data.error) {
+                aDiv.innerText = "❌ Error: " + data.error;
+                return;
+            }
 
-    // Update bot bubble with actual answer
-    aDiv.innerText = data.answer || "No answer";
+            // Update bot bubble with actual answer
+            aDiv.innerText = data.answer || "No answer";
 
-    // Add sources if available
-    if (data.sources && data.sources.length > 0) {
-      const srcDiv = document.createElement("div");
-      srcDiv.className = "sources";
-      srcDiv.innerHTML = "<strong>Sources:</strong><br>";
-      data.sources.forEach(s => {
-        const one = document.createElement("div");
-        one.className = "source";
-        one.innerText = `${s.source}: ${s.snippet}`;
-        srcDiv.appendChild(one);
-      });
-      chatDiv.appendChild(srcDiv);
-    }
+            // Add sources if available
+            if (data.sources && data.sources.length > 0) {
+                const srcDiv = document.createElement("div");
+                srcDiv.className = "sources-dropdown";
 
-    chatDiv.scrollTop = chatDiv.scrollHeight;
-  }
-document.getElementById("uploadBtn").addEventListener("click", async () => {
-        const fileInput = document.getElementById("pdfUpload");
-        if (fileInput.files.length === 0) return;
-        const formData = new FormData();
-        formData.append("file", fileInput.files[0]);
+                // Create dropdown header
+                const header = document.createElement("div");
+                header.className = "dropdown-header";
+                header.innerHTML = `
+                    <span>Sources (${data.sources.length})</span>
+                    <span class="dropdown-arrow">▼</span>
+                `;
 
-        const res = await fetch("/upload", { method: "POST", body: formData });
-        const data = await res.json();
-        alert(data.success || data.error);
-      });
-  document.getElementById("askBtn").addEventListener("click", askQuestion);
-  document.getElementById("question").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") askQuestion();
-  });
-</script>
+                // Create dropdown content
+                const content = document.createElement("div");
+                content.className = "sources-content";
+                content.style.display = "none";
 
-  </body>
+                data.sources.forEach(s => {
+                    const sourceItem = document.createElement("div");
+                    sourceItem.className = "source-item";
+                    sourceItem.innerHTML = `<strong>${s.source}:</strong> ${s.snippet}`;
+                    content.appendChild(sourceItem);
+                });
+
+                // Add click event to toggle dropdown
+                header.addEventListener("click", function() {
+                    const isVisible = content.style.display !== "none";
+                    content.style.display = isVisible ? "none" : "block";
+                    const arrow = header.querySelector(".dropdown-arrow");
+                    arrow.textContent = isVisible ? "▼" : "▲";
+                });
+
+                srcDiv.appendChild(header);
+                srcDiv.appendChild(content);
+                chatDiv.appendChild(srcDiv);
+            }
+
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+        document.getElementById("uploadBtn").addEventListener("click", async() => {
+            const fileInput = document.getElementById("pdfUpload");
+            if (fileInput.files.length === 0) return;
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            const res = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            alert(data.success || data.error);
+        });
+        document.getElementById("askBtn").addEventListener("click", askQuestion);
+        document.getElementById("question").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") askQuestion();
+        });
+    </script>
+
+</body>
+
 </html>

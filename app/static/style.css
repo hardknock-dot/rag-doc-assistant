@@ -1,4 +1,5 @@
 /* app/static/style.css */
+
 body {
     background-color: #000;
     color: #fff;
@@ -13,30 +14,38 @@ body {
 .container {
     width: auto;
     display: flex;
-    flex-direction: column; /* stack vertically */
-    align-items: flex-end; /* keep cards aligned to the corner */
+    flex-direction: column;
+    /* stack vertically */
+    align-items: flex-end;
+    /* keep cards aligned to the corner */
     gap: 10px;
     padding: 6px;
 }
 
 .card {
-    background: linear-gradient(180deg,#141414,#1a1a1a);
+    background: linear-gradient(180deg, #141414, #1a1a1a);
     padding: 28px;
     border-radius: 16px;
     width: 520px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
     text-align: center;
-    display: flex; /* Added */
-    flex-direction: column; /* Added */
-    align-items: center; /* Added */
+    display: flex;
+    /* Added */
+    flex-direction: column;
+    /* Added */
+    align-items: center;
+    /* Added */
 }
+
 .uploadcard {
-    background: linear-gradient(180deg,#141414,#1a1a1a);
+    background: linear-gradient(180deg, #141414, #1a1a1a);
     padding: 28px;
     border-radius: 12px;
-    width: 520px; /* match original card width for desktop */
-    height: 150px; /* constrained in the corner widget */
-    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    width: 520px;
+    /* match original card width for desktop */
+    height: 150px;
+    /* constrained in the corner widget */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
     text-align: left;
     margin-top: 0;
 }
@@ -82,9 +91,10 @@ button:hover {
 .source {
     margin-top: 10px;
     padding: 8px;
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 8px;
 }
+
 .chat-history {
     margin-top: 20px;
     max-height: 200px;
@@ -105,13 +115,15 @@ button:hover {
     border-radius: 6px;
     margin-bottom: 8px;
 }
+
 .answer pre {
     margin: 0;
     font-family: inherit;
 }
+
 .chat-history {
     margin-top: 20px;
-    height: 200px;
+    max-height: 200px;
     width: 470px;
     overflow-y: auto;
     padding: 10px;
@@ -148,13 +160,18 @@ button:hover {
     margin-left: 10px;
 }
 
+
 /* --- New styles for upload section --- */
+
 .upload-container {
     width: 100%;
     margin-top: 12px;
-    display: flex; /* Added */
-    justify-content: flex-end; /* Added */
-    align-items: center; /* Added */
+    display: flex;
+    /* Added */
+    justify-content: flex-end;
+    /* Added */
+    align-items: center;
+    /* Added */
     margin-bottom: 20px;
 }
 
@@ -164,47 +181,153 @@ button:hover {
 }
 
 @media (max-width: 420px) {
-    .uploadcard, .card { width: calc(100% - 32px); }
+    .uploadcard,
+    .card {
+        width: calc(100% - 32px);
+    }
 }
+
+
 /* --- New styles for dropdown --- */
+
 .sources-dropdown {
     width: 100%;
     margin-top: 15px;
     text-align: left;
-    display: none; /* Initially hidden */
 }
 
 .dropdown-header {
-    background-color: #2a2a2a;
-    padding: 10px;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+    padding: 12px 16px;
+    border-radius: 10px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+    font-size: 14px;
 }
 
 .dropdown-header:hover {
-    background-color: #3a3a3a;
+    background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+    border-color: #555;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-arrow {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+    color: #00ffd5;
 }
 
 .sources-content {
     margin-top: 8px;
-    padding: 0 10px;
+    padding: 12px;
     border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #1a1a1a;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .source-item {
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #333;
-    font-size: 12px;
-    color: #aaa;
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.4;
+    transition: background-color 0.2s ease;
+}
+
+.source-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .source-item:last-child {
     border-bottom: none;
+}
+
+.source-item strong {
+    color: #00ffd5;
+    font-weight: 600;
+}
+
+
+/* --- Toggle Switch Styles --- */
+
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.mode-toggle input[type="checkbox"] {
+    display: none;
+}
+
+.slider {
+    position: relative;
+    width: 50px;
+    height: 24px;
+    background-color: #333;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+    border: 1px solid #555;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #fff;
+    top: 1px;
+    left: 1px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.mode-toggle input[type="checkbox"]:checked+.slider {
+    background-color: #00ffd5;
+    border-color: #00ffd5;
+}
+
+.mode-toggle input[type="checkbox"]:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.mode-label {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+}
+
+.mode-toggle:hover .slider {
+    border-color: #777;
+}
+
+.mode-toggle input[type="checkbox"]:checked:hover+.slider {
+    border-color: #00ffd5;
+    box-shadow: 0 0 8px rgba(0, 255, 213, 0.3);
 }

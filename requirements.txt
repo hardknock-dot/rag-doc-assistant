@@ -2,6 +2,7 @@ langchain
 langchain-community
 langchain-chroma
 langchain-huggingface
+langchain-openai
 faiss-cpu
 chromadb
 openai
@@ -10,3 +11,6 @@ pypdf
 python-dotenv
 fastapi
 uvicorn
+transformers
+torch
+accelerate
