@@ -106,3 +106,4 @@ def build_openai_llm():
     except Exception as e:
         print(f"OpenAI setup failed: {e}")
         return None
+

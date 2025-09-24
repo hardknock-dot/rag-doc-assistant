@@ -39,3 +39,4 @@ class LLMConfig:
             return "openai"  # Auto-select OpenAI if available
         else:
             return "huggingface"  # Fallback to HuggingFace
+
